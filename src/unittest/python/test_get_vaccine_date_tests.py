@@ -10,37 +10,47 @@ from uc3m_care import AppointmentsJsonStore
 from uc3m_care import PatientsJsonStore
 
 
-param_list_nok = [("test_dup_all.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_char_plus.json","phone number is not valid"),
-                    ("test_dup_colon.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_comillas.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_comma.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_content.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_data1.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_data1_content.json","patient system id is not valid"),
-                    ("test_dup_data2.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_data2_content.json","phone number is not valid"),
-                    ("test_dup_field1.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_field2.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_final_bracket.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_initial_bracket.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_label1.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_label1_content.json","Bad label patient_id"),
-                    ("test_dup_label2.json", "JSON Decode Error - Wrong JSON Format"),
-                    ("test_dup_label2_content.json", "Bad label contact phone"),
-                    ("test_dup_phone.json", "phone number is not valid"),
-                    ("test_empty.json", "Bad label patient_id"),
-                    ("test_mod_char_plus.json", "phone number is not valid"),
-                    ("test_mod_data1.json", "patient system id is not valid"),
-                    ("test_mod_data2.json", "phone number is not valid"),
-                    ("test_mod_label1.json", "Bad label patient_id"),
-                    ("test_mod_label2.json", "Bad label contact phone"),
-                    ("test_mod_phone.json", "phone number is not valid"),
-                    ("test_no_char_plus.json", "phone number is not valid"),
-                    ("test_no_colon.json", "JSON Decode Error - Wrong JSON Format"),
-                    ("test_no_comillas.json","JSON Decode Error - Wrong JSON Format"),
-                    ("test_no_phone.json", "phone number is not valid")
-                    ]
+param_list_nok = [("test_dup_all.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_char_plus.json", "2022-03-18", "phone number is not valid"),
+                  ("test_dup_colon.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_comillas.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_comma.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_content.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_data1.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_data1_content.json", "2022-03-18", "patient system id is not valid"),
+                  ("test_dup_data2.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_data2_content.json", "2022-03-18", "phone number is not valid"),
+                  ("test_dup_field1.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_field2.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_final_bracket.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_initial_bracket.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_label1.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_label1_content.json", "2022-03-18", "Bad label patient_id"),
+                  ("test_dup_label2.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_dup_label2_content.json", "2022-03-18", "Bad label contact phone"),
+                  ("test_dup_phone.json", "2022-03-18", "phone number is not valid"),
+                  ("test_empty.json", "2022-03-18", "Bad label patient_id"),
+                  ("test_mod_char_plus.json", "2022-03-18", "phone number is not valid"),
+                  ("test_mod_data1.json", "2022-03-18", "patient system id is not valid"),
+                  ("test_mod_data2.json", "2022-03-18", "phone number is not valid"),
+                  ("test_mod_label1.json", "2022-03-18", "Bad label patient_id"),
+                  ("test_mod_label2.json", "2022-03-18", "Bad label contact phone"),
+                  ("test_mod_phone.json", "2022-03-18", "phone number is not valid"),
+                  ("test_no_char_plus.json", "2022-03-18", "phone number is not valid"),
+                  ("test_no_colon.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_no_comillas.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format"),
+                  ("test_no_phone.json", "2022-03-18", "phone number is not valid"),
+                  ("test_ok.json", "2022-03-188", "wrong date format"),
+                  ("test_ok.json", "2022-03-1", "wrong date format"),
+                  ("test_ok.json", "18-03-2022", "wrong date format"),
+                  ("test_ok.json", "2022/03/18", "wrong date format"),
+                  ("test_ok.json", "2022-13-18", "wrong date format"),
+                  ("test_ok.json", "2022-03-32", "wrong date format"),
+                  ("test_ok.json", "0000-03-18", "wrong date format"),
+                  ("test_ok.json", "2022-03-07", "wrong date format"),
+                  ("test_ok.json", 2022, "wrong date format")
+                  ]
+
 
 class TestGetVaccineDate(TestCase):
     """Class for testing get_vaccine_date"""
@@ -48,22 +58,23 @@ class TestGetVaccineDate(TestCase):
     def test_get_vaccine_date_ok(self):
         """test ok"""
         file_test = JSON_FILES_RF2_PATH + "test_ok.json"
+        date = "2022-03-18"
         my_manager = VaccineManager()
 
-    #first , prepare my test , remove store patient
+        # first , prepare my test , remove store patient
         file_store = PatientsJsonStore()
         file_store.delete_json_file()
         file_store_date = AppointmentsJsonStore()
         file_store_date.delete_json_file()
 
-    # add a patient in the store
+        # add a patient in the store
         my_manager.request_vaccination_id("78924cb0-075a-4099-a3ee-f3b562e805b9",
                                           "minombre tienelalongitudmaxima",
                                           "Regular","+34123456789","6")
-    #check the method
-        value = my_manager.get_vaccine_date(file_test)
+        # check the method
+        value = my_manager.get_vaccine_date(file_test, date)
         self.assertEqual(value, "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c")
-    #check store_date
+        # check store_date
         self.assertIsNotNone(file_store_date.find_item(value))
 
     @freeze_time("2022-03-08")
@@ -79,14 +90,14 @@ class TestGetVaccineDate(TestCase):
         my_manager.request_vaccination_id("78924cb0-075a-4099-a3ee-f3b562e805b9",
                                           "minombre tienelalongitudmaxima",
                                           "Regular", "+34123456789", "6")
-        for file_name,expected_value in param_list_nok:
+        for file_name, date, expected_value in param_list_nok:
             with self.subTest(test=file_name):
                 file_test = JSON_FILES_RF2_PATH + file_name
                 hash_original = file_store_date.data_hash()
 
                 # check the method
                 with self.assertRaises(VaccineManagementException) as c_m:
-                    my_manager.get_vaccine_date(file_test)
+                    my_manager.get_vaccine_date(file_test, date)
                 self.assertEqual(c_m.exception.message, expected_value)
 
                 # read the file again to compare
@@ -99,6 +110,7 @@ class TestGetVaccineDate(TestCase):
     def test_get_vaccine_date_no_ok(self):
         """# long 32 in patient system id , not valid"""
         file_test = JSON_FILES_RF2_PATH + "test_no_ok.json"
+        date = "2022-03-18"
         my_manager = VaccineManager()
         file_store_date = AppointmentsJsonStore()
 
@@ -107,7 +119,7 @@ class TestGetVaccineDate(TestCase):
 
         #check the method
         with self.assertRaises(VaccineManagementException) as c_m:
-            my_manager.get_vaccine_date(file_test)
+            my_manager.get_vaccine_date(file_test, date)
         self.assertEqual(c_m.exception.message, "patient system id is not valid")
 
         # read the file again to campare
@@ -119,6 +131,7 @@ class TestGetVaccineDate(TestCase):
     def test_get_vaccine_date_no_ok_no_quotes(self):
         """ no quotes , not valid """
         file_test = JSON_FILES_RF2_PATH + "test_nok_no_comillas.json"
+        date = "2022-03-18"
         my_manager = VaccineManager()
         file_store_date = AppointmentsJsonStore()
 
@@ -127,7 +140,7 @@ class TestGetVaccineDate(TestCase):
 
     #check the method
         with self.assertRaises(VaccineManagementException) as c_m:
-            my_manager.get_vaccine_date(file_test)
+            my_manager.get_vaccine_date(file_test, date)
         self.assertEqual(c_m.exception.message, "JSON Decode Error - Wrong JSON Format")
 
     #read the file again to campare
@@ -140,6 +153,7 @@ class TestGetVaccineDate(TestCase):
     def test_get_vaccine_date_no_ok_data_manipulated( self ):
         """ no quotes , not valid """
         file_test = JSON_FILES_RF2_PATH + "test_ok.json"
+        date = "2022-03-18"
         my_manager = VaccineManager()
         file_store = JSON_FILES_PATH + "store_patient.json"
         file_store_date = JSON_FILES_PATH + "store_date.json"
@@ -165,7 +179,7 @@ class TestGetVaccineDate(TestCase):
 
         exception_message = "Exception not raised"
         try:
-            my_manager.get_vaccine_date(file_test)
+            my_manager.get_vaccine_date(file_test, date)
         #pylint: disable=broad-except
         except Exception as exception_raised:
             exception_message = exception_raised.__str__()

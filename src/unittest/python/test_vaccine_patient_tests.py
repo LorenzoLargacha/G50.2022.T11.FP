@@ -21,19 +21,20 @@ class TestVaccinePatient(TestCase):
         file_store_date.delete_json_file()
         file_store_patient.delete_json_file()
         file_test = JSON_FILES_RF2_PATH + "test_ok.json"
+        date = "2022-03-18"
         #add patient and date in the store
         my_manager = VaccineManager()
         my_manager.request_vaccination_id("78924cb0-075a-4099-a3ee-f3b562e805b9",
                                           "minombre tienelalongitudmaxima", "Regular",
                                           "+34123456789", "6")
-        my_manager.get_vaccine_date(file_test)
+        my_manager.get_vaccine_date(file_test, date)
 
         my_manager.request_vaccination_id("57c811e5-3f5a-4a89-bbb8-11c0464d53e6",
                                           "minombre tieneuncharmenosqmax", "Family",
                                           "+34333456789","7")
         file_test = JSON_FILES_RF2_PATH + "test_ok_2.json"
 
-        my_manager.get_vaccine_date(file_test)
+        my_manager.get_vaccine_date(file_test, date)
 
     @freeze_time("2022-03-18")
     def test_vaccine_patient_ok(self):

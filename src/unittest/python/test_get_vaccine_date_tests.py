@@ -47,8 +47,7 @@ param_list_nok = [("test_dup_all.json", "2022-03-18", "JSON Decode Error - Wrong
                   ("test_ok.json", "2022-13-18", "wrong date format"),
                   ("test_ok.json", "2022-03-32", "wrong date format"),
                   ("test_ok.json", "0000-03-18", "wrong date format"),
-                  ("test_ok.json", "2022-03-07", "wrong date format"),
-                  ("test_ok.json", 2022, "wrong date format")
+                  ("test_ok.json", "2022-03-07", "date should be after today")
                   ]
 
 

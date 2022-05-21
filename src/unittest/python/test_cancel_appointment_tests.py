@@ -110,7 +110,8 @@ class TestCancelAppointment(TestCase):
 
     @freeze_time("2022-03-08")
     def test_cancel_appointment_nok_13(self):
-        """test_nok_13. Los datos introducidos son correctos pero store_date no cambia"""
+        """test_nok_13. Los datos introducidos son correctos pero store_date no cambia.
+        Cancelamos una misma cita dos veces seguidas de forma Temporal"""
         my_manager = VaccineManager()
         # Preparamos los stores
         self.setup()

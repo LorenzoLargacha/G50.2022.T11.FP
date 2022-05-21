@@ -123,7 +123,8 @@ param_list_nok = [("test_modif_valor1.json", "Error ", "test_nok_1"),
                   ("test_no_valor3.json", "Error ", "test_nok_104"),
                   ("test_no_comillas12.json", "Error ", "test_nok_105"),
                   ("test_doble_comillas12.json", "Error ", "test_nok_106"),
-                  ("test_modif_comillas12.json.json", "Error ", "test_nok_107")]
+                  ("test_modif_comillas12.json.json", "Error ", "test_nok_107"),
+                  ("test_nok_108.json.json", "Error ", "test_nok_108")]
 
 class TestCancelAppointment(TestCase):
     """Class for testing cancel_appointment"""
@@ -203,7 +204,7 @@ class TestCancelAppointment(TestCase):
                 print(test_id)
 
     @freeze_time("2022-03-08")
-    def test_cancel_appointment_nok_13(self):
+    def test_nok_13(self):
         """test_nok_13. Los datos introducidos son correctos pero store_date no cambia.
         Cancelamos una misma cita dos veces seguidas de forma Temporal"""
         my_manager = VaccineManager()
@@ -211,6 +212,7 @@ class TestCancelAppointment(TestCase):
         self.setup()
         file_store_date = AppointmentsJsonStore()
         file_test = JSON_FILES_CANCEL_PATH + "test_ok_1.json"
+        expected_value = "Cita ya cancelada de forma Temporal"
         # Cancelamos la cita de vacunacion del paciente
         value = my_manager.cancel_appointment(file_test)
         self.assertEqual(value, "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c")
@@ -220,12 +222,117 @@ class TestCancelAppointment(TestCase):
         with self.assertRaises(VaccineManagementException) as c_m:
             my_manager.cancel_appointment(file_test)
         # Comprobamos que el método devuelve la excepcion esperada
-        self.assertEqual(c_m.exception.message, "cita ya cancelada anteriormente")
+        self.assertEqual(c_m.exception.message, expected_value)
         # Volvemos a leer el fichero store_date para comparar
         hash_new = file_store_date.data_hash()
         # Comprobamos que el fichero store_date no haya cambiado
         self.assertEqual(hash_new, hash_original)
 
+    @freeze_time("2022-03-08")
+    def test_nok_109_no_store_date(self):
+        """test_nok_109. Se produce un error de procesamiento interno cuando el fichero store_date no existe"""
+        my_manager = VaccineManager()
+        # Preparamos los stores
+        file_store_patient = PatientsJsonStore()
+        file_store_date = AppointmentsJsonStore()
+
+        file_store_patient.delete_json_file()
+        file_store_date.delete_json_file()
+
+        file_test = JSON_FILES_CANCEL_PATH + "test_ok_1.json"
+        expected_value = "Fichero store_date no creado"
+
+        # Leemos el fichero store_date original
+        hash_original = file_store_date.data_hash()
+        # Comprobamos que el método devuelve la excepcion esperada
+        with self.assertRaises(VaccineManagementException) as c_m:
+            my_manager.cancel_appointment(file_test)
+        self.assertEqual(c_m.exception.message, expected_value)
+        # Volvemos a leer el fichero store_date para comparar
+        hash_new = file_store_date.data_hash()
+        # Comprobamos que el fichero store_date no haya cambiado
+        self.assertEqual(hash_new, hash_original)
+
+    @freeze_time("2022-03-08")
+    def test_ok_110_temporal_final_cancels(self):
+        """test_nok_110. Los datos introducidos son correctos y el store_date cambia.
+        Cancelamos una cita de forma Temporal en primer lugar, y posteriormente de forma Final"""
+        my_manager = VaccineManager()
+        # Preparamos los stores
+        self.setup()
+        file_store_date = AppointmentsJsonStore()
+        file_test = JSON_FILES_CANCEL_PATH + "test_ok_1.json"
+        expected_value = "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c"
+        # Cancelamos la cita de vacunacion del paciente de forma Temporal
+        my_manager.cancel_appointment(file_test)
+        # Cancelamos la cita de vacunacion del paciente de forma Final
+        file_test = JSON_FILES_CANCEL_PATH + "test_ok_2.json"
+        # Comprobamos que el método devuelve la date_signature correcta
+        value = my_manager.cancel_appointment(file_test)
+        self.assertEqual(value, expected_value)
+        # Buscamos en store_date la date_signature de la cita
+        appointment_item = file_store_date.find_item(expected_value)
+        found = False
+        # si encontramos la date_signature
+        if appointment_item is not None:
+            # comprobamos si el cancelation_type es el esperado
+            if appointment_item["_VaccinationAppointment__cancelation_type"] == "Final":
+                found = True
+        # Comprobamos que se ha modificado el cancelation_type correctamente
+        self.assertTrue(found)
+
+    @freeze_time("2022-03-08")
+    def test_nok_111_final_temporal_cancels(self):
+        """test_nok_111. Los datos introducidos son correctos pero store_date no cambia.
+        Intentamos cancelar una cita de forma Temporal, que ya se había cancelado antes de forma Final"""
+
+        my_manager = VaccineManager()
+        # Preparamos los stores
+        self.setup()
+        file_store_date = AppointmentsJsonStore()
+        file_test = JSON_FILES_CANCEL_PATH + "test_ok_2.json"
+        expected_value = "Cita ya cancelada anteriormente de forma Final"
+        # Cancelamos la cita de vacunacion del paciente de forma final
+        value = my_manager.cancel_appointment(file_test)
+        self.assertEqual(value, "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c")
+        # Leemos el fichero store_date
+        hash_original = file_store_date.data_hash()
+        # Volvemos a intentar cancelar la cita
+        file_test = JSON_FILES_CANCEL_PATH + "test_ok_1.json"
+        with self.assertRaises(VaccineManagementException) as c_m:
+            my_manager.cancel_appointment(file_test)
+        # Comprobamos que el método devuelve la excepcion esperada
+        self.assertEqual(c_m.exception.message, expected_value)
+        # Volvemos a leer el fichero store_date para comparar
+        hash_new = file_store_date.data_hash()
+        # Comprobamos que el fichero store_date no haya cambiado
+        self.assertEqual(hash_new, hash_original)
+
+    @freeze_time("2022-03-08")
+    def test_nok_112_final_final_cancels(self):
+        """test_nok_112. Los datos introducidos son correctos pero store_date no cambia.
+        Intentamos cancelar una cita de forma Final, que ya se había cancelado antes de forma Final"""
+
+        my_manager = VaccineManager()
+        # Preparamos los stores
+        self.setup()
+        file_store_date = AppointmentsJsonStore()
+        file_test = JSON_FILES_CANCEL_PATH + "test_ok_2.json"
+        expected_value = "Cita ya cancelada anteriormente de forma Final"
+        # Cancelamos la cita de vacunacion del paciente de forma final
+        value = my_manager.cancel_appointment(file_test)
+        self.assertEqual(value, "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c")
+        # Leemos el fichero store_date
+        hash_original = file_store_date.data_hash()
+        # Volvemos a intentar cancelar la cita de forma Final
+        with self.assertRaises(VaccineManagementException) as c_m:
+            my_manager.cancel_appointment(file_test)
+        # Comprobamos que el método devuelve la excepcion esperada
+        self.assertEqual(c_m.exception.message, expected_value)
+        # Volvemos a leer el fichero store_date para comparar
+        hash_new = file_store_date.data_hash()
+        # Comprobamos que el fichero store_date no haya cambiado
+        self.assertEqual(hash_new, hash_original)
 
 
 if __name__ == '__main__':

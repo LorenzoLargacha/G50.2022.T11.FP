@@ -6,17 +6,17 @@ from uc3m_care import VaccineManager
 from uc3m_care import VaccineManagementException
 from uc3m_care import JSON_FILES_RF2_PATH, JSON_FILES_CANCEL_PATH
 
-from uc3m_care.storage.appointments_json_store import AppointmentsJsonStore
 from uc3m_care.storage.patients_json_store import PatientsJsonStore
-#from uc3m_care.storage.json_store import JsonStore
+from uc3m_care.storage.appointments_json_store import AppointmentsJsonStore
+from uc3m_care.storage.vaccination_json_store import VaccinationJsonStore
 
 
-param_list_ok = [("test_ok_1.json", "Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_1"),
-                 ("test_ok_2.json", "Final", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_2"),
-                 ("test_ok_3.json", "Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_3"),
-                 ("test_ok_4.json", "Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_4"),
-                 ("test_ok.json", "Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_5"),
-                 ("test_no_comillas12.json", "Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_6")]
+param_list_ok = [("test_ok_1.json", "Cancelled Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_1"),
+                 ("test_ok_2.json", "Cancelled Final", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_2"),
+                 ("test_ok_3.json", "Cancelled Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_3"),
+                 ("test_ok_4.json", "Cancelled Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_4"),
+                 ("test_ok.json", "Cancelled Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_5"),
+                 ("test_doble_valor3.json", "Cancelled Temporal", "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c", "test_ok_6")]
 
 param_list_nok = [("test_modif_valor1.json", "Error ", "test_nok_1"),
                   ("test_nok_2.json", "Error ", "test_nok_2"),
@@ -136,17 +136,19 @@ class TestCancelAppointment(TestCase):
         """Method to prepare the stores"""
         file_store_patient = PatientsJsonStore()
         file_store_date = AppointmentsJsonStore()
+        file_store_vaccine = VaccinationJsonStore()
 
         file_store_patient.delete_json_file()
         file_store_date.delete_json_file()
+        file_store_vaccine.delete_json_file()
 
-        file_test = JSON_FILES_RF2_PATH + "test_ok.json"
         date = "2022-03-18"
         # Añadimos los pacientes y las citas en los stores
         my_manager = VaccineManager()
         my_manager.request_vaccination_id("78924cb0-075a-4099-a3ee-f3b562e805b9",
                                           "minombre tienelalongitudmaxima", "Regular",
                                           "+34123456789", "6")
+        file_test = JSON_FILES_RF2_PATH + "test_ok.json"
         my_manager.get_vaccine_date(file_test, date)
 
         my_manager.request_vaccination_id("57c811e5-3f5a-4a89-bbb8-11c0464d53e6",
@@ -159,7 +161,7 @@ class TestCancelAppointment(TestCase):
     def test_cancel_appointment_ok_parameter(self):
         """test_ok 1-6. Tests validos de la funcion cancel_appointment (parametrizados)"""
         my_manager = VaccineManager()
-        for file_name, cancel_type, expected_value, test_id in param_list_ok:
+        for file_name, appointment_status, expected_value, test_id in param_list_ok:
             with self.subTest(test=test_id):
                 # Preparamos los stores
                 self.setup()
@@ -174,7 +176,7 @@ class TestCancelAppointment(TestCase):
                 # si encontramos la date_signature
                 if appointment_item is not None:
                     # comprobamos si el appointment_status es el esperado
-                    if appointment_item["_VaccinationAppointment__appointment_status"] == cancel_type:
+                    if appointment_item["_VaccinationAppointment__appointment_status"] == appointment_status:
                         found = True
                 # Comprobamos que se ha modificado el appointment_status correctamente
                 self.assertTrue(found)
@@ -276,7 +278,7 @@ class TestCancelAppointment(TestCase):
         # si encontramos la date_signature
         if appointment_item is not None:
             # comprobamos si el appointment_status es el esperado
-            if appointment_item["_VaccinationAppointment__appointment_status"] == "Final":
+            if appointment_item["_VaccinationAppointment__appointment_status"] == "Cancelled Final":
                 found = True
         # Comprobamos que se ha modificado el appointment_status correctamente
         self.assertTrue(found)

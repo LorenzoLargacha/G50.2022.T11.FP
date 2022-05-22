@@ -48,8 +48,6 @@ class VaccineManager:
 
         def cancel_appointment(self, input_file):
             """Cancel a vaccination appointment"""
-            pass
-
             # Intentamos abrir el fichero de entrada, validamos las keys y guardamos sus datos
             cancelation_parser = CancelationJsonParser(input_file)
 
@@ -65,13 +63,15 @@ class VaccineManager:
             # Obtenemos los valores del diccionario y los validamos
             date_signature = DateSignature(cancelation_parser.json_content[cancelation_parser.DATE_SIGNATURE_KEY]).value
             cancelation_type = CancelationType(cancelation_parser.json_content[cancelation_parser.CANCELATION_TYPE_KEY]).value
-            reason = Reason(cancelation_parser.json_content[cancelation_parser.REASON_KEY]).value
+            Reason(cancelation_parser.json_content[cancelation_parser.REASON_KEY])
 
             # Buscamos la cita en store_date, y si existe creamos un objeto tipo VaccinationAppoinment
             appointment = VaccinationAppointment.get_appointment_from_date_signature(date_signature)
 
             # Modificamos el status de la cita en el objeto y en el fichero store_date
             appointment.modify_appointment_status(cancelation_type)
+
+            return date_signature
 
 
     instance = None

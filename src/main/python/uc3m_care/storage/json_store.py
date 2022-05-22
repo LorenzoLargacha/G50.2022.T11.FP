@@ -43,7 +43,6 @@ class JsonStore():
     def update_item(self, item, key_value):
         """Updates an item in the datalist and updates the JSON file"""
         # Cargamos los datos del fichero
-        self.load()
         # Buscamos el item antiguo que se quiere actualizar
         item_to_update = self.find_item(key_value)
         # Borramos el item antiguo

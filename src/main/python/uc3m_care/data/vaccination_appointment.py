@@ -6,12 +6,15 @@ from uc3m_care.data.attribute.attribute_phone_number import PhoneNumber
 from uc3m_care.data.attribute.attribute_patient_system_id import PatientSystemId
 from uc3m_care.data.attribute.attribute_date_signature import DateSignature
 from uc3m_care.data.attribute.attribute_appointment_date import AppointmentDate
+from uc3m_care.data.attribute.attribute_cancelation_type import CancelationType
+from uc3m_care.data.attribute.attribute_reason import Reason
 from uc3m_care.data.vaccination_log import VaccinationLog
 from uc3m_care.data.vaccine_patient_register import VaccinePatientRegister
 from uc3m_care.exception.vaccine_management_exception import VaccineManagementException
 from uc3m_care.storage.appointments_json_store import AppointmentsJsonStore
 from uc3m_care.storage.vaccination_json_store import VaccinationJsonStore
 from uc3m_care.parser.appointment_json_parser import AppointmentJsonParser
+from uc3m_care.parser.cancelation_json_parser import CancelationJsonParser
 
 
 #pylint: disable=too-many-instance-attributes
@@ -147,8 +150,28 @@ class VaccinationAppointment():
             vaccination_log_entry.save_log_entry()
         return True
 
+    @classmethod
+    def modify_appointment_from_json_file(cls, input_file):
+        """returns the vaccination appointment object for the input_file received
+        and modifies the appointment_status"""
+        # Intentamos abrir el fichero de entrada, validamos las keys y guardamos sus datos
+        cancelation_parser = CancelationJsonParser(input_file)
+        # Comprobamos que solo haya una solicitud de cancelacion con tres keys
+        if not len(cancelation_parser.json_content) == 3:
+            raise VaccineManagementException("Estructura JSON incorrecta")
+        # Obtenemos los valores del diccionario y los validamos
+        date_signature = DateSignature(cancelation_parser.json_content[cancelation_parser.DATE_SIGNATURE_KEY]).value
+        cancelation_type = CancelationType(
+            cancelation_parser.json_content[cancelation_parser.CANCELATION_TYPE_KEY]).value
+        Reason(cancelation_parser.json_content[cancelation_parser.REASON_KEY])
+        # Buscamos la cita en store_date, y si existe creamos un objeto tipo VaccinationAppoinment
+        appointment = cls.get_appointment_from_date_signature(date_signature)
+        # Modificamos el status de la cita en el objeto y en el fichero store_date
+        appointment.modify_appointment_status(cancelation_type)
+        return appointment
+
     def modify_appointment_status(self, cancelation_type):
-        """Modifica el status de la cita en el objeto VaccinationAppoinment y en store_date"""
+        """Modifica el status de la cita en el objeto VaccinationAppoinment"""
         # Comprobamos si la fecha de la cita recibida ya ha pasado
         appointment_days = (self.__appointment_date / 3600) / 24
         today_time_stamp = datetime.timestamp(datetime.utcnow())
@@ -176,12 +199,11 @@ class VaccinationAppointment():
             # Si era Temporal se puede cancelar como Final
             elif cancelation_type == "Final":
                 self.__appointment_status = "Cancelled Final"
-            #elif cancelation_type == "Active":
-                #self.__appointment_status = "Active"
         # Si la cita esta cancelada de forma Final lanzamos una excepcion
         elif self.__appointment_status == "Cancelled Final":
             raise VaccineManagementException("Cita ya cancelada de forma Final")
 
-        # Modificamos la cita en store_date
+    def modify_store_date(self):
+        """Modifica el status de la cita en store_date"""
         appointments_store = AppointmentsJsonStore()
         appointments_store.update_item(self, self.__date_signature)

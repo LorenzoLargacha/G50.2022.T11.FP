@@ -47,7 +47,8 @@ param_list_nok = [("test_dup_all.json", "2022-03-18", "JSON Decode Error - Wrong
                   ("test_ok.json", "2022-13-18", "wrong date format"),
                   ("test_ok.json", "2022-03-32", "wrong date format"),
                   ("test_ok.json", "0000-03-18", "wrong date format"),
-                  ("test_ok.json", "2022-03-07", "date should be after today")
+                  ("test_ok.json", "2022-03-07", "date should be after today"),
+                  ("test_nok_no_comillas.json", "2022-03-18", "JSON Decode Error - Wrong JSON Format")
                   ]
 
 
@@ -125,28 +126,6 @@ class TestGetVaccineDate(TestCase):
         hash_new = file_store_date.data_hash()
 
         self.assertEqual(hash_new, hash_original)
-
-    @freeze_time("2022-03-08")
-    def test_get_vaccine_date_no_ok_no_quotes(self):
-        """ no quotes , not valid """
-        file_test = JSON_FILES_RF2_PATH + "test_nok_no_comillas.json"
-        date = "2022-03-18"
-        my_manager = VaccineManager()
-        file_store_date = AppointmentsJsonStore()
-
-        # read the file to compare file content before and after method call
-        hash_original = file_store_date.data_hash()
-
-    #check the method
-        with self.assertRaises(VaccineManagementException) as c_m:
-            my_manager.get_vaccine_date(file_test, date)
-        self.assertEqual(c_m.exception.message, "JSON Decode Error - Wrong JSON Format")
-
-    #read the file again to campare
-        hash_new = file_store_date.data_hash()
-
-        self.assertEqual(hash_new, hash_original)
-
 
     @freeze_time("2022-03-08")
     def test_get_vaccine_date_no_ok_data_manipulated( self ):

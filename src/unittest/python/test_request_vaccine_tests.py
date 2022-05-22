@@ -133,7 +133,6 @@ class TestRequestVacID(unittest.TestCase):
         file_store.empty_json_file()
         my_request = VaccineManager()
 
-
         for patient_id, name_surname, registration_type, phone_number, age, \
             expected_result, comment in param_list_nok:
             with self.subTest(test = comment):

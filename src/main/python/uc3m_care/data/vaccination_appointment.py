@@ -5,6 +5,7 @@ from freezegun import freeze_time
 from uc3m_care.data.attribute.attribute_phone_number import PhoneNumber
 from uc3m_care.data.attribute.attribute_patient_system_id import PatientSystemId
 from uc3m_care.data.attribute.attribute_date_signature import DateSignature
+from uc3m_care.data.attribute.attribute_appointment_status import AppointmentStatus
 from uc3m_care.data.attribute.attribute_appointment_date import AppointmentDate
 from uc3m_care.data.attribute.attribute_cancelation_type import CancelationType
 from uc3m_care.data.attribute.attribute_reason import Reason
@@ -33,7 +34,7 @@ class VaccinationAppointment():
         self.__issued_at = datetime.timestamp(justnow)
         self.__appointment_date = AppointmentDate(date).value
         self.__date_signature = self.vaccination_signature
-        self.__appointment_status = appointment_status
+        self.__appointment_status = AppointmentStatus(appointment_status).value
 
 
     def __signature_string(self):

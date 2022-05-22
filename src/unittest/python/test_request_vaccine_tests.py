@@ -33,7 +33,9 @@ param_list_ok=[("78924cb0-075a-4099-a3ee-f3b562e805b9", "minombre tienelalongitu
                ("cde0bc01-5bc7-4c0c-90d6-94c9549e6abd", "minombre tiene dosblancos","Regular",
                 "+34333456789", "125", "7fbd065ae9c274c7ccf30c50c0cd87a3","test_3"),
                ("a729d963-e0dd-47d0-8bc6-b6c595ad0098", "m m", "Regular",
-                "+44333456789", "124", "76a1b7346a927ef02ad5098f673ca876","test_4")
+                "+44333456789", "124", "76a1b7346a927ef02ad5098f673ca876","test_4"),
+               ("bb5dbd6f-d8b4-413f-8eb9-dd262cfc54e0", "Pedro Hernandez", "Regular",
+                "+34123456789","22","9bc3dcae6701f7f54d71e36e0df12a59","test_ok")
                ]
 
 param_list_nok=[("bb5dbd6f-d8b4-113f-8eb9-dd262cfc54e0",
@@ -164,19 +166,6 @@ class TestRequestVacID(unittest.TestCase):
         patients_found = file_store.find_items_list("a729d963-e0dd-47d0-8bc6-b6c595ad0098",
                                               "_VaccinePatientRegister__patient_id")
         self.assertEqual(len(patients_found), 2)
-
-    @freeze_time("2022-03-08")
-    def test_request_vaccination_id_ok(self):
-        """Test OK"""
-        file_store = PatientsJsonStore()
-        file_store.delete_json_file()
-        my_request = VaccineManager()
-
-        value = my_request.request_vaccination_id("bb5dbd6f-d8b4-413f-8eb9-dd262cfc54e0",
-                                                  "Pedro Hernandez", "Regular","+34123456789","22" )
-        self.assertEqual("9bc3dcae6701f7f54d71e36e0df12a59", value)
-        self.assertIsNotNone(
-            file_store.find_item(value))
 
     def test_request_vaccination_id_nok_uuid(self):
         """UUID is not v4 version"""

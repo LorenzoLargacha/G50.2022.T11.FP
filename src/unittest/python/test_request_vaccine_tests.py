@@ -96,7 +96,15 @@ param_list_nok=[("bb5dbd6f-d8b4-113f-8eb9-dd262cfc54e0",
                 ("6071d52e-ab42-452d-837c-0639367db79f",
                  "Pedro Perez","Regular",
                 "+34333456789", "126", "age is not valid",
-                 "test_19, age is 126")
+                 "test_19, age is 126"),
+                ("bb5dbd6f-d8b4-113f-8eb9-dd262cfc54e0",
+                 "Pedro Hernandez","Regular",
+                 "+34123456789","22","UUID invalid", "test_request_vaccination_id_nok_uuid"),
+                ("zb5dbd6f-d8b4-113f-8eb9-dd262cfc54e0",
+                 "Pedro Hernandez","Regular","+34123456789","22","Id received is not a UUID",
+                 "test_request_vaccination_id_nok_uuid_2"),
+                ("bb5dbd6f-d8b4-413f-8eb9-dd262cfc54e0","Pedro Hernandez",
+                 "Regularito","+34123456789", "22","Registration type is nor valid","test_request_registration_type_nok")
                 ]
 
 
@@ -166,41 +174,6 @@ class TestRequestVacID(unittest.TestCase):
         patients_found = file_store.find_items_list("a729d963-e0dd-47d0-8bc6-b6c595ad0098",
                                               "_VaccinePatientRegister__patient_id")
         self.assertEqual(len(patients_found), 2)
-
-    def test_request_vaccination_id_nok_uuid(self):
-        """UUID is not v4 version"""
-        my_request = VaccineManager()
-
-        with self.assertRaises(VaccineManagementException) as context_manager:
-            my_request.request_vaccination_id("bb5dbd6f-d8b4-113f-8eb9-dd262cfc54e0",
-                                                      "Pedro Hernandez","Regular",
-                                                      "+34123456789","22" )
-        self.assertEqual("UUID invalid", context_manager.exception.message)
-
-
-    def test_request_vaccination_id_nok_uuid_2(self):
-        """UUID is not hexadecimal"""
-        my_request = VaccineManager()
-        with self.assertRaises(VaccineManagementException) as context_manager:
-            my_request.request_vaccination_id("zb5dbd6f-d8b4-113f-8eb9-dd262cfc54e0",
-                                                      "Pedro Hernandez","Regular",
-                                                      "+34123456789","22" )
-        self.assertEqual("Id received is not a UUID", context_manager.exception.message)
-
-    def test_request_registration_type_nok(self):
-        """registration type is not ok"""
-        file_store = PatientsJsonStore()
-        hash_original = file_store.data_hash()
-
-        my_request = VaccineManager()
-        with self.assertRaises(VaccineManagementException) as context_manager:
-            my_request.request_vaccination_id("bb5dbd6f-d8b4-413f-8eb9-dd262cfc54e0",
-                                                      "Pedro Hernandez", "Regularito",
-                                                      "+34123456789", "22")
-        hash_new = file_store.data_hash()
-
-        self.assertEqual("Registration type is nor valid", context_manager.exception.message)
-        self.assertEqual(hash_new,hash_original)
 
 if __name__ == '__main__':
     unittest.main()

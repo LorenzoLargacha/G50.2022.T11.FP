@@ -18,7 +18,7 @@ from uc3m_care.parser.appointment_json_parser import AppointmentJsonParser
 class VaccinationAppointment():
     """Class representing an appointment  for the vaccination of a patient"""
 
-    def __init__(self, patient_sys_id, patient_phone_number, date):
+    def __init__(self, patient_sys_id, patient_phone_number, date,appointment_status="Active"):
         self.__alg = "SHA-256"
         self.__type = "DS"
         self.__patient_sys_id = PatientSystemId(patient_sys_id).value
@@ -30,7 +30,7 @@ class VaccinationAppointment():
         self.__issued_at = datetime.timestamp(justnow)
         self.__appointment_date = AppointmentDate(date).value
         self.__date_signature = self.vaccination_signature
-        self.__appointment_status = "Active"
+        self.__appointment_status = appointment_status
 
 
     def __signature_string(self):
@@ -114,7 +114,8 @@ class VaccinationAppointment():
         # Obtenemos la fecha de la cita y la convertimos de timestamp a string
         appointment_date_str = datetime.fromtimestamp(appointment_record["_VaccinationAppointment__appointment_date"]).strftime("%Y-%m-%d")
         appointment = cls(appointment_record["_VaccinationAppointment__patient_sys_id"],
-                          appointment_record["_VaccinationAppointment__phone_number"], appointment_date_str)
+                          appointment_record["_VaccinationAppointment__phone_number"], appointment_date_str,
+                          appointment_record["_VaccinationAppointment__appointment_status"])
         freezer.stop()
         return appointment
 
@@ -139,6 +140,9 @@ class VaccinationAppointment():
     def register_vaccination(self):
         """register the vaccine administration"""
         if self.is_valid_today():
+            #Comprobamos que la cita no haya sido cancelada
+            if self.appointment_status != "Active":
+                raise VaccineManagementException("La cita para la que se intenta vacunar ha sido cancelada")
             vaccination_log_entry = VaccinationLog(self.date_signature)
             vaccination_log_entry.save_log_entry()
         return True

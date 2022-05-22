@@ -52,10 +52,6 @@ class VaccineManager:
             cancelation_parser = CancelationJsonParser(input_file)
 
             # Comprobamos la estructura del fichero JSON
-            # Si la solicitud de cancelacion no se encuentra en el fichero lanzamos una excepcion
-            if len(cancelation_parser.json_content) == 0:
-                raise VaccineManagementException("La solicitud no se encontro en el archivo de solicitudes JSON")
-
             # Comprobamos que solo haya una solicitud de cancelacion con tres keys
             if not len(cancelation_parser.json_content) == 3:
                 raise VaccineManagementException("Estructura JSON incorrecta")

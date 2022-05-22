@@ -30,7 +30,7 @@ param_list_nok = [("test_modif_valor1.json", "Error ", "test_nok_1"),
                   ("test_modif_valor3.json", "Error ", "test_nok_10"),
                   ("test_nok_11.json", "Error ", "test_nok_11"),
                   ("test_nok_12.json", "Error ", "test_nok_12"),
-                  ("test_no_ruta.json", "Error ", "test_nok_14"),
+                  ("test_no_ruta.json", "File is not found", "test_nok_14"),
                   ("test_no_comillas3.json", "Error ", "test_nok_15"),
                   ("test_fichero_vacio.json", "Error ", "test_nok_16"),
                   ("test_doble_contenido.json", "Error ", "test_nok_17"),
@@ -126,6 +126,7 @@ param_list_nok = [("test_modif_valor1.json", "Error ", "test_nok_1"),
                   ("test_modif_comillas12.json.json", "Error ", "test_nok_107"),
                   ("test_nok_108.json.json", "Error ", "test_nok_108")]
 
+
 class TestCancelAppointment(TestCase):
     """Class for testing cancel_appointment"""
 
@@ -156,7 +157,7 @@ class TestCancelAppointment(TestCase):
 
     @freeze_time("2022-03-08")
     def test_cancel_appointment_ok_parameter(self):
-        """test_ok 1-4. Tests validos de la funcion cancel_appointment (parametrizados)"""
+        """test_ok 1-6. Tests validos de la funcion cancel_appointment (parametrizados)"""
         my_manager = VaccineManager()
         for file_name, cancel_type, expected_value, test_id in param_list_ok:
             with self.subTest(test=test_id):
@@ -172,10 +173,10 @@ class TestCancelAppointment(TestCase):
                 found = False
                 # si encontramos la date_signature
                 if appointment_item is not None:
-                    # comprobamos si el cancelation_type es el esperado
-                    if appointment_item["_VaccinationAppointment__cancelation_type"] == cancel_type:
+                    # comprobamos si el appointment_status es el esperado
+                    if appointment_item["_VaccinationAppointment__appointment_status"] == cancel_type:
                         found = True
-                # Comprobamos que se ha modificado el cancelation_type correctamente
+                # Comprobamos que se ha modificado el appointment_status correctamente
                 self.assertTrue(found)
                 # Mostramos el id del test que se ha ejecutado
                 print(test_id)
@@ -232,10 +233,9 @@ class TestCancelAppointment(TestCase):
     def test_nok_109_no_store_date(self):
         """test_nok_109. Se produce un error de procesamiento interno cuando el fichero store_date no existe"""
         my_manager = VaccineManager()
-        # Preparamos los stores
+        # Borramos los stores
         file_store_patient = PatientsJsonStore()
         file_store_date = AppointmentsJsonStore()
-
         file_store_patient.delete_json_file()
         file_store_date.delete_json_file()
 
@@ -255,19 +255,19 @@ class TestCancelAppointment(TestCase):
 
     @freeze_time("2022-03-08")
     def test_ok_110_temporal_final_cancels(self):
-        """test_nok_110. Los datos introducidos son correctos y el store_date cambia.
+        """test_nok_110. Los datos introducidos son correctos y store_date cambia.
         Cancelamos una cita de forma Temporal en primer lugar, y posteriormente de forma Final"""
         my_manager = VaccineManager()
         # Preparamos los stores
         self.setup()
         file_store_date = AppointmentsJsonStore()
-        file_test = JSON_FILES_CANCEL_PATH + "test_ok_1.json"
         expected_value = "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c"
         # Cancelamos la cita de vacunacion del paciente de forma Temporal
-        my_manager.cancel_appointment(file_test)
+        file_test = JSON_FILES_CANCEL_PATH + "test_ok_1.json"
+        value = my_manager.cancel_appointment(file_test)
+        self.assertEqual(value, expected_value)
         # Cancelamos la cita de vacunacion del paciente de forma Final
         file_test = JSON_FILES_CANCEL_PATH + "test_ok_2.json"
-        # Comprobamos que el método devuelve la date_signature correcta
         value = my_manager.cancel_appointment(file_test)
         self.assertEqual(value, expected_value)
         # Buscamos en store_date la date_signature de la cita
@@ -275,17 +275,17 @@ class TestCancelAppointment(TestCase):
         found = False
         # si encontramos la date_signature
         if appointment_item is not None:
-            # comprobamos si el cancelation_type es el esperado
-            if appointment_item["_VaccinationAppointment__cancelation_type"] == "Final":
+            # comprobamos si el appointment_status es el esperado
+            if appointment_item["_VaccinationAppointment__appointment_status"] == "Final":
                 found = True
-        # Comprobamos que se ha modificado el cancelation_type correctamente
+        # Comprobamos que se ha modificado el appointment_status correctamente
         self.assertTrue(found)
 
     @freeze_time("2022-03-08")
     def test_nok_111_final_temporal_cancels(self):
         """test_nok_111. Los datos introducidos son correctos pero store_date no cambia.
-        Intentamos cancelar una cita de forma Temporal, que ya se había cancelado antes de forma Final"""
-
+        Intentamos cancelar una cita de forma Temporal,
+        que ya se había cancelado antes de forma Final"""
         my_manager = VaccineManager()
         # Preparamos los stores
         self.setup()
@@ -311,8 +311,8 @@ class TestCancelAppointment(TestCase):
     @freeze_time("2022-03-08")
     def test_nok_112_final_final_cancels(self):
         """test_nok_112. Los datos introducidos son correctos pero store_date no cambia.
-        Intentamos cancelar una cita de forma Final, que ya se había cancelado antes de forma Final"""
-
+        Intentamos cancelar una cita de forma Final,
+        que ya se había cancelado antes de forma Final"""
         my_manager = VaccineManager()
         # Preparamos los stores
         self.setup()

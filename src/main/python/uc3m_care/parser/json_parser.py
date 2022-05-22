@@ -3,19 +3,19 @@ import json
 from uc3m_care.exception.vaccine_management_exception import VaccineManagementException
 
 class JsonParser():
-    """Subclass of JsonStore for managing the Appointments"""
+    """Superclass for parsing input json files"""
     _JSON_KEYS = []
     _ERROR_MESSAGES = []
     _json_content = None
 
-    def __init__( self, input_file ):
+    def __init__(self, input_file):
         self._input_file = input_file
         self.load_json_content()
         self.validate_json_keys()
 
     def validate_json_keys(self):
         """Validates the keys stored in JSON_KEYS list"""
-        for key,error_message in zip(self._JSON_KEYS,self._ERROR_MESSAGES):
+        for key, error_message in zip(self._JSON_KEYS, self._ERROR_MESSAGES):
             if key not in self._json_content.keys():
                 raise VaccineManagementException(error_message)
 

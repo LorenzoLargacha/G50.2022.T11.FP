@@ -10,6 +10,7 @@ from uc3m_care.data.vaccination_log import VaccinationLog
 from uc3m_care.data.vaccine_patient_register import VaccinePatientRegister
 from uc3m_care.exception.vaccine_management_exception import VaccineManagementException
 from uc3m_care.storage.appointments_json_store import AppointmentsJsonStore
+from uc3m_care.storage.vaccination_json_store import VaccinationJsonStore
 from uc3m_care.parser.appointment_json_parser import AppointmentJsonParser
 
 #pylint: disable=too-many-instance-attributes
@@ -28,7 +29,7 @@ class VaccinationAppointment():
         self.__issued_at = datetime.timestamp(justnow)
         self.__appointment_date = AppointmentDate(date).value
         self.__date_signature = self.vaccination_signature
-
+        self.__appointment_status = "Active"
 
 
     def __signature_string(self):
@@ -50,6 +51,7 @@ class VaccinationAppointment():
     def patient_sys_id(self):
         """Property that represents the patient_sys_id of the patient"""
         return self.__patient_sys_id
+
     @patient_sys_id.setter
     def patient_sys_id(self, value):
         self.__patient_sys_id = value
@@ -87,11 +89,16 @@ class VaccinationAppointment():
         """Returns the SHA256 """
         return self.__date_signature
 
-    def save_appointment( self ):
+    @property
+    def appointment_status(self):
+        """Property that represents the appointment_status of an appointment"""
+        return self.__appointment_status
+
+
+    def save_appointment(self):
         """saves the appointment in the appointments store"""
         appointments_store = AppointmentsJsonStore()
         appointments_store.add_item(self)
-
 
     @classmethod
     def get_appointment_from_date_signature(cls, date_signature):
@@ -134,3 +141,40 @@ class VaccinationAppointment():
             vaccination_log_entry = VaccinationLog(self.date_signature)
             vaccination_log_entry.save_log_entry()
         return True
+
+    def modify_appointment_status(self, cancelation_type):
+        """Modifica el status de la cita en store_date"""
+        # Comprobamos si la fecha de la cita recibida ya ha pasado
+        appointment_days = (self.__appointment_date / 3600) / 24
+        today_time_stamp = datetime.timestamp(datetime.utcnow())
+        today_days = (today_time_stamp / 3600) / 24
+        if appointment_days < today_days:
+            raise VaccineManagementException("La fecha de la cita recibida ya ha pasado")
+
+        # Comprobamos si ya se ha administrado la vacuna
+        vaccination_store = VaccinationJsonStore()
+        if vaccination_store.find_item(self.__date_signature) is not None:
+            raise VaccineManagementException("Ya se ha administrado la vacuna")
+
+
+        # Si la cita esta activa
+        if self.__appointment_status == "Active":
+            # La cancelamos de forma Temporal o Final
+            if cancelation_type == "Temporal":
+                self.__appointment_status = "Cancelled Temporal"
+            elif cancelation_type == "Final":
+                self.__appointment_status = "Cancelled Final"
+        # Si la cita esta cancelada de forma Temporal
+        elif self.__appointment_status == "Cancelled Temporal":
+            pass
+        # Si la cita esta cancelada de forma Final
+        elif self.__appointment_status == "Cancelled Final":
+            raise VaccineManagementException("Cita ya cancelada de forma Final")
+
+
+
+        #if cancelation_type == "Active":
+            #self.__appointment_status = "Active"
+
+        appointments_store = AppointmentsJsonStore()
+        #appointments_store.add_item(self)

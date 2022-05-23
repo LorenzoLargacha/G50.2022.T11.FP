@@ -2,10 +2,10 @@
 import hashlib
 import json
 import os
-
 from uc3m_care.exception.vaccine_management_exception import VaccineManagementException
 
-class JsonStore():
+
+class JsonStore:
     """Superclass for managing storage in JSON files"""
     _FILE_PATH = ""
     _ID_FIELD = ""

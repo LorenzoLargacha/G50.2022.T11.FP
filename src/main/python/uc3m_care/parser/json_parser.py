@@ -2,7 +2,8 @@
 import json
 from uc3m_care.exception.vaccine_management_exception import VaccineManagementException
 
-class JsonParser():
+
+class JsonParser:
     """Superclass for parsing input json files"""
     _JSON_KEYS = []
     _ERROR_MESSAGES = []
@@ -32,6 +33,6 @@ class JsonParser():
         self._json_content = data
 
     @property
-    def json_content( self ):
+    def json_content(self):
         """returns a dictionary with the content of the json file"""
         return self._json_content

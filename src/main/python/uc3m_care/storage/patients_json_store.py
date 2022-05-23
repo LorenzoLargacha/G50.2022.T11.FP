@@ -3,7 +3,8 @@ from uc3m_care.storage.json_store import JsonStore
 from uc3m_care.cfg.vaccine_manager_config import JSON_FILES_PATH
 from uc3m_care.exception.vaccine_management_exception import VaccineManagementException
 
-class PatientsJsonStore():
+
+class PatientsJsonStore:
     """Implements the singleton pattern"""
 
     #pylint: disable=invalid-name
@@ -12,16 +13,16 @@ class PatientsJsonStore():
         _FILE_PATH = JSON_FILES_PATH + "store_patient.json"
         _ID_FIELD = "_VaccinePatientRegister__patient_sys_id"
 
-        def add_item( self, item ):
+        def add_item(self, item):
             """Overrides the add_item to verify the item to be stored"""
             #pylint: disable=import-outside-toplevel, cyclic-import
             from uc3m_care.data.vaccine_patient_register import VaccinePatientRegister
-            if not isinstance(item,VaccinePatientRegister):
+            if not isinstance(item, VaccinePatientRegister):
                 raise VaccineManagementException("Invalid patient object")
 
             patient_found = False
-            patient_records = self.find_items_list\
-                (item.patient_id,"_VaccinePatientRegister__patient_id")
+            patient_records = self.find_items_list(
+                item.patient_id, "_VaccinePatientRegister__patient_id")
             for patient_recorded in patient_records:
                 if (patient_recorded["_VaccinePatientRegister__registration_type"]
                     == item.vaccine_type) \
@@ -35,13 +36,13 @@ class PatientsJsonStore():
 
     instance = None
 
-    def __new__ ( cls ):
+    def __new__(cls):
         if not PatientsJsonStore.instance:
             PatientsJsonStore.instance = PatientsJsonStore.__PatientsJsonStore()
         return PatientsJsonStore.instance
 
-    def __getattr__ ( self, nombre ):
+    def __getattr__(self, nombre):
         return getattr(self.instance, nombre)
 
-    def __setattr__ ( self, nombre, valor ):
+    def __setattr__(self, nombre, valor):
         return setattr(self.instance, nombre, valor)

@@ -4,9 +4,10 @@ from uc3m_care.storage.json_store import JsonStore
 from uc3m_care.cfg.vaccine_manager_config import JSON_FILES_PATH
 from uc3m_care.exception.vaccine_management_exception import VaccineManagementException
 
-class VaccinationJsonStore():
+
+class VaccinationJsonStore:
     """Implmentation of the singleton pattern"""
-    #pylint: disable=invalid-name
+    # pylint: disable=invalid-name
     class __VaccinationJsonStore(JsonStore):
         """Subclass of JsonStore for managing the VaccinationLog"""
         _FILE_PATH = JSON_FILES_PATH + "store_vaccine.json"
@@ -21,13 +22,14 @@ class VaccinationJsonStore():
             super().add_item(item)
 
     instance = None
-    def __new__ ( cls ):
+
+    def __new__(cls):
         if not VaccinationJsonStore.instance:
             VaccinationJsonStore.instance = VaccinationJsonStore.__VaccinationJsonStore()
         return VaccinationJsonStore.instance
 
-    def __getattr__ ( self, nombre ):
+    def __getattr__(self, nombre):
         return getattr(self.instance, nombre)
 
-    def __setattr__ ( self, nombre, valor ):
+    def __setattr__(self, nombre, valor):
         return setattr(self.instance, nombre, valor)

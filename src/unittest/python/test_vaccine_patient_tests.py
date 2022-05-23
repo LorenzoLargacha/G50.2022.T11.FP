@@ -9,6 +9,7 @@ from uc3m_care.storage.vaccination_json_store import VaccinationJsonStore
 from uc3m_care.storage.appointments_json_store import AppointmentsJsonStore
 from uc3m_care.storage.patients_json_store import PatientsJsonStore
 
+
 class TestVaccinePatient(TestCase):
     """Class for testing vaccine patient"""
     @freeze_time("2022-03-08")
@@ -48,14 +49,12 @@ class TestVaccinePatient(TestCase):
             ("5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c")
         self.assertIsNotNone(vaccination_entry)
 
-
     @freeze_time("2022-04-18")
     def test_vaccine_patient_no_date(self):
         """path signature is found , and date is not today"""
         file_store_vaccine = VaccinationJsonStore()
         file_store_vaccine.delete_json_file()
         my_manager = VaccineManager()
-
 
         # read the file  to compare
         hash_original = file_store_vaccine.data_hash()
@@ -99,7 +98,6 @@ class TestVaccinePatient(TestCase):
         # read the file again to compare
         hash_new = file_store_vaccine.data_hash()
         self.assertEqual(hash_new, hash_original)
-
 
     @freeze_time("2022-03-18")
     @unittest.skip("This exception won't be raised after the refactoring process")

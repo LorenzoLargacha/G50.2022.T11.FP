@@ -18,10 +18,11 @@ from uc3m_care.parser.appointment_json_parser import AppointmentJsonParser
 from uc3m_care.parser.cancelation_json_parser import CancelationJsonParser
 
 
-#pylint: disable=too-many-instance-attributes
-class VaccinationAppointment():
+# pylint: disable=too-many-instance-attributes
+class VaccinationAppointment:
     """Class representing an appointment  for the vaccination of a patient"""
-    def __init__(self, patient_sys_id: str, patient_phone_number: str, date: str, appointment_status="Active") -> None:
+    def __init__(self, patient_sys_id: str, patient_phone_number: str,
+                 date: str, appointment_status="Active") -> None:
         self.__alg = "SHA-256"
         self.__type = "DS"
         self.__patient_sys_id = PatientSystemId(patient_sys_id).value
@@ -38,7 +39,7 @@ class VaccinationAppointment():
 
     def __signature_string(self) -> str:
         """Composes the string to be used for generating the key for the date"""
-        return "{alg:" + self.__alg +",typ:" + self.__type +",patient_sys_id:" + \
+        return "{alg:" + self.__alg + ",typ:" + self.__type + ",patient_sys_id:" + \
                self.__patient_sys_id + ",issuedate:" + self.__issued_at.__str__() + \
                ",vaccinationtiondate:" + self.__appointment_date.__str__() + "}"
 
@@ -114,9 +115,11 @@ class VaccinationAppointment():
             datetime.fromtimestamp(appointment_record["_VaccinationAppointment__issued_at"]))
         freezer.start()
         # Obtenemos la fecha de la cita y la convertimos de timestamp a string
-        appointment_date_str = datetime.fromtimestamp(appointment_record["_VaccinationAppointment__appointment_date"]).strftime("%Y-%m-%d")
+        appointment_date_str = datetime.fromtimestamp(
+            appointment_record["_VaccinationAppointment__appointment_date"]).strftime("%Y-%m-%d")
         appointment = cls(appointment_record["_VaccinationAppointment__patient_sys_id"],
-                          appointment_record["_VaccinationAppointment__phone_number"], appointment_date_str,
+                          appointment_record["_VaccinationAppointment__phone_number"],
+                          appointment_date_str,
                           appointment_record["_VaccinationAppointment__appointment_status"])
         freezer.stop()
         return appointment
@@ -142,9 +145,10 @@ class VaccinationAppointment():
     def register_vaccination(self) -> True:
         """register the vaccine administration"""
         if self.is_valid_today():
-            #Comprobamos que la cita no haya sido cancelada
+            # Comprobamos que la cita no haya sido cancelada
             if self.appointment_status != "Active":
-                raise VaccineManagementException("La cita para la que se intenta vacunar ha sido cancelada")
+                raise VaccineManagementException(
+                    "La cita para la que se intenta vacunar ha sido cancelada")
             vaccination_log_entry = VaccinationLog(self.date_signature)
             vaccination_log_entry.save_log_entry()
         return True
@@ -159,7 +163,8 @@ class VaccinationAppointment():
         if not len(cancelation_parser.json_content) == 3:
             raise VaccineManagementException("Estructura JSON incorrecta")
         # Obtenemos los valores del diccionario y los validamos
-        date_signature = DateSignature(cancelation_parser.json_content[cancelation_parser.DATE_SIGNATURE_KEY]).value
+        date_signature = DateSignature(
+            cancelation_parser.json_content[cancelation_parser.DATE_SIGNATURE_KEY]).value
         cancelation_type = CancelationType(
             cancelation_parser.json_content[cancelation_parser.CANCELATION_TYPE_KEY]).value
         Reason(cancelation_parser.json_content[cancelation_parser.REASON_KEY])
@@ -192,12 +197,12 @@ class VaccinationAppointment():
                 self.__appointment_status = "Cancelled Final"
         # Si la cita esta cancelada de forma Temporal
         elif self.__appointment_status == "Cancelled Temporal":
-            # Si se intenta volver a cancelar como Temporal lanzamos una excepcion
-            if cancelation_type == "Temporal":
-                raise VaccineManagementException("Cita ya cancelada de forma Temporal")
             # Si era Temporal se puede cancelar como Final
-            elif cancelation_type == "Final":
+            if cancelation_type == "Final":
                 self.__appointment_status = "Cancelled Final"
+            # Si se intenta volver a cancelar como Temporal lanzamos una excepcion
+            elif cancelation_type == "Temporal":
+                raise VaccineManagementException("Cita ya cancelada de forma Temporal")
         # Si la cita esta cancelada de forma Final lanzamos una excepcion
         elif self.__appointment_status == "Cancelled Final":
             raise VaccineManagementException("Cita ya cancelada de forma Final")

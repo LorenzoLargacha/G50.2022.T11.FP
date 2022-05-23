@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="test_singleton_pattern_tests.MyTestCase-20220523162026" tests="1" file="test_singleton_pattern_tests.py" time="0.001" timestamp="2022-05-23T16:20:27" failures="0" errors="0" skipped="0">
+	<testcase classname="test_singleton_pattern_tests.MyTestCase" name="test_parametrized_singleton" time="0.001" timestamp="2022-05-23T16:20:27"/>
+</testsuite>

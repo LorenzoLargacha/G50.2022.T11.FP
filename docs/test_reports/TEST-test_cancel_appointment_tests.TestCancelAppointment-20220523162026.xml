@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="test_cancel_appointment_tests.TestCancelAppointment-20220523162026" tests="11" file="test_cancel_appointment_tests.py" time="1.950" timestamp="2022-05-23T16:20:30" failures="0" errors="0" skipped="0">
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_cancel_appointment_nok_parameter" time="1.718" timestamp="2022-05-23T16:20:29"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_cancel_appointment_ok_parameter" time="0.121" timestamp="2022-05-23T16:20:29"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_nok_109_no_store_date" time="0.016" timestamp="2022-05-23T16:20:29"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_nok_111_final_temporal_cancels" time="0.021" timestamp="2022-05-23T16:20:29"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_nok_112_final_final_cancels" time="0.019" timestamp="2022-05-23T16:20:29"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_nok_113_appointment_cancelled" time="0.014" timestamp="2022-05-23T16:20:29"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_nok_114_wrong_store_date" time="0.007" timestamp="2022-05-23T16:20:29"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_nok_116_wrong_appointment_date" time="0.007" timestamp="2022-05-23T16:20:29"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_nok_117_already_vaccinated" time="0.008" timestamp="2022-05-23T16:20:29"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_nok_13" time="0.008" timestamp="2022-05-23T16:20:30"/>
+	<testcase classname="test_cancel_appointment_tests.TestCancelAppointment" name="test_ok_110_temporal_final_cancels" time="0.010" timestamp="2022-05-23T16:20:30"/>
+</testsuite>

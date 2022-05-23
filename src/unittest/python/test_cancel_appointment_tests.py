@@ -210,9 +210,7 @@ param_list_nok = [("test_modif_valor1.json", "date_signature format is not valid
                   ("test_modif_comillas12.json",
                    "JSON Decode Error - Wrong JSON Format", "test_nok_107"),
                   ("test_nok_108.json", "Estructura JSON incorrecta", "test_nok_108"),
-                  ("test_nok_115.json", "date_signature is not found",
-                   "test_nok_115")
-                  ]
+                  ("test_nok_115.json", "date_signature is not found","test_nok_115")]
 
 
 class TestCancelAppointment(TestCase):
@@ -477,6 +475,50 @@ class TestCancelAppointment(TestCase):
         if os.path.isfile(ruta_store_date):
             os.remove(ruta_store_date)
 
+    @freeze_time("2022-03-28")
+    def test_nok_116_wrong_appointment_date(self):
+        """test_nok_116. Un paciente cancelar una cita que ya ha pasado"""
+        my_manager = VaccineManager()
+        # Preparamos los stores
+        self.setup()
+        file_store_date = AppointmentsJsonStore()
+        file_test = JSON_FILES_CANCEL_PATH + "test_ok_2.json"
+        expected_value = "La fecha de la cita recibida ya ha pasado"
+        # Leemos el fichero store_date
+        hash_original = file_store_date.data_hash()
+        # Intentamos cancelar la cita que ya ha pasado
+        with self.assertRaises(VaccineManagementException) as c_m:
+            my_manager.cancel_appointment(file_test)
+        # Comprobamos que el método devuelve la excepcion esperada
+        self.assertEqual(c_m.exception.message, expected_value)
+        # Volvemos a leer el fichero store_date para comparar
+        hash_new = file_store_date.data_hash()
+        # Comprobamos que el fichero store_date no haya cambiado
+        self.assertEqual(hash_new, hash_original)
+
+    @freeze_time("2022-03-18")
+    def test_nok_117_already_vaccinated(self):
+        """test_nok_117. Un paciente intenta cancelar la cita con la que ya se ha vacunado"""
+        my_manager = VaccineManager()
+        # Preparamos los stores
+        self.setup()
+        file_store_date = AppointmentsJsonStore()
+        file_test = JSON_FILES_CANCEL_PATH + "test_ok_2.json"
+        # Vacunamos al paciente
+        my_manager.vaccine_patient(
+            "5a06c7bede3d584e934e2f5bd3861e625cb31937f9f1a5362a51fbbf38486f1c")
+        expected_value = "Ya se ha administrado la vacuna"
+        # Leemos el fichero store_date
+        hash_original = file_store_date.data_hash()
+        # Intentamos cancelamor la cita de vacunacion del paciente de forma final
+        with self.assertRaises(VaccineManagementException) as c_m:
+            my_manager.cancel_appointment(file_test)
+        # Comprobamos que el método devuelve la excepcion esperada
+        self.assertEqual(c_m.exception.message, expected_value)
+        # Volvemos a leer el fichero store_date para comparar
+        hash_new = file_store_date.data_hash()
+        # Comprobamos que el fichero store_date no haya cambiado
+        self.assertEqual(hash_new, hash_original)
 
 if __name__ == '__main__':
     unittest.main()

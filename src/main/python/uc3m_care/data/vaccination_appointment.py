@@ -18,7 +18,6 @@ from uc3m_care.parser.appointment_json_parser import AppointmentJsonParser
 from uc3m_care.parser.cancelation_json_parser import CancelationJsonParser
 
 
-# pylint: disable=too-many-instance-attributes
 class VaccinationAppointment:
     """Class representing an appointment  for the vaccination of a patient"""
     def __init__(self, patient_sys_id: str, patient_phone_number: str,

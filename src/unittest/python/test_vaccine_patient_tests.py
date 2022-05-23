@@ -23,7 +23,7 @@ class TestVaccinePatient(TestCase):
         file_store_patient.delete_json_file()
         file_test = JSON_FILES_RF2_PATH + "test_ok.json"
         date = "2022-03-18"
-        #add patient and date in the store
+        # add patient and date in the store
         my_manager = VaccineManager()
         my_manager.request_vaccination_id("78924cb0-075a-4099-a3ee-f3b562e805b9",
                                           "minombre tienelalongitudmaxima", "Regular",
@@ -114,7 +114,7 @@ class TestVaccinePatient(TestCase):
     @freeze_time("2022-03-18")
     def test_vaccine_patient_store_date_is_empty(self):
         """for testing: store_date is empty"""
-        #write a store_date empty
+        # write a store_date empty
         file_store_date = AppointmentsJsonStore()
         file_store_date.empty_json_file()
         my_manager = VaccineManager()

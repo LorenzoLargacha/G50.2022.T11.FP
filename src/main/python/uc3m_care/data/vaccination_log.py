@@ -2,7 +2,7 @@
 from datetime import datetime
 from uc3m_care.storage.vaccination_json_store import VaccinationJsonStore
 
-#pylint: disable=too-few-public-methods
+
 class VaccinationLog:
     """Class representing an entry of the Vaccine administration log"""
 

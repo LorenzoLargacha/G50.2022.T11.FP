@@ -399,6 +399,10 @@ good-names-rgxs=
 # Include a hint for the correct naming format with invalid-name.
 include-naming-hint=no
 
+# Desactivar errores pylint
+#disable=invalid-name
+disable=import-outside-toplevel, cyclic-import
+
 # Naming style matching correct inline iteration names.
 inlinevar-naming-style=any
 
@@ -530,10 +534,12 @@ exclude-too-few-public-methods=
 ignored-parents=
 
 # Maximum number of arguments for function / method.
-max-args=5
+# max-args=5
+max-args=6
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=7
+# max-attributes=7
+max-attributes=9
 
 # Maximum number of boolean expressions in an if statement (see R0916).
 max-bool-expr=5

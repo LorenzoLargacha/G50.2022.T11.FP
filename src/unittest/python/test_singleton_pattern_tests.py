@@ -12,7 +12,8 @@ param_list = [VaccineManager(), VaccinationJsonStore(),
 class MyTestCase(unittest.TestCase):
     """Tests for singleton pattern"""
     def test_parametrized_singleton(self):
-        """testing singleton for VaccineManager, PatientsJsonStore, AppointmentsJsonStore and VaccinationJsonStore"""
+        """testing singleton for VaccineManager, PatientsJsonStore,
+        AppointmentsJsonStore and VaccinationJsonStore"""
         for singleton_class in param_list:
             vm1 = singleton_class
             vm2 = singleton_class

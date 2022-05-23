@@ -6,13 +6,10 @@ from uc3m_care.data.vaccination_appointment import VaccinationAppointment
 class VaccineManager:
     """Class for providing the methods for managing the vaccination process"""
 
-    # pylint: disable=invalid-name
     class __VaccineManager:
         def __init__(self):
             pass
 
-        # pylint: disable=too-many-arguments
-        # pylint: disable=no-self-use
         def request_vaccination_id(self, patient_id: str,
                                    name_surname: str,
                                    registration_type: str,

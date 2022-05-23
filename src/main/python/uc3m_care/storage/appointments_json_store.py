@@ -7,7 +7,7 @@ from uc3m_care.exception.vaccine_management_exception import VaccineManagementEx
 
 class AppointmentsJsonStore:
     """Implements the singleton pattern"""
-    #pylint: disable=invalid-name
+
     class __AppointmentsJsonStore(JsonStore):
         """Subclass of JsonStore for managing the Appointments"""
         _FILE_PATH = JSON_FILES_PATH + "store_date.json"
@@ -16,7 +16,6 @@ class AppointmentsJsonStore:
 
         def add_item(self, item):
             """Overrides the add_item method to verify the item to be stored"""
-            #pylint: disable=import-outside-toplevel, cyclic-import
             from uc3m_care.data.vaccination_appointment import VaccinationAppointment
             if not isinstance(item, VaccinationAppointment):
                 raise VaccineManagementException(self.ERROR_INVALID_APPOINTMENT_OBJECT)

@@ -215,7 +215,6 @@ param_list_nok = [("test_modif_valor1.json", "date_signature format is not valid
 
 class TestCancelAppointment(TestCase):
     """Class for testing cancel_appointment"""
-
     @staticmethod
     @freeze_time("2022-03-08")
     def setup():
@@ -267,8 +266,6 @@ class TestCancelAppointment(TestCase):
                         found = True
                 # Comprobamos que se ha modificado el appointment_status correctamente
                 self.assertTrue(found)
-                # Mostramos el id del test que se ha ejecutado
-                print(test_id)
 
     @freeze_time("2022-03-08")
     def test_cancel_appointment_nok_parameter(self):
@@ -291,8 +288,6 @@ class TestCancelAppointment(TestCase):
                 hash_new = file_store_date.data_hash()
                 # Comprobamos que el fichero store_date no haya cambiado
                 self.assertEqual(hash_new, hash_original)
-                # Mostramos el id del test que se ha ejecutado
-                print(test_id)
 
     @freeze_time("2022-03-08")
     def test_nok_13(self):
@@ -519,6 +514,7 @@ class TestCancelAppointment(TestCase):
         hash_new = file_store_date.data_hash()
         # Comprobamos que el fichero store_date no haya cambiado
         self.assertEqual(hash_new, hash_original)
+
 
 if __name__ == '__main__':
     unittest.main()

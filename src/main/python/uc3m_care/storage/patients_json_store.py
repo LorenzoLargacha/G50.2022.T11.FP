@@ -7,7 +7,6 @@ from uc3m_care.exception.vaccine_management_exception import VaccineManagementEx
 class PatientsJsonStore:
     """Implements the singleton pattern"""
 
-    #pylint: disable=invalid-name
     class __PatientsJsonStore(JsonStore):
         """Subclass of JsonStore for managing the VaccinationLog"""
         _FILE_PATH = JSON_FILES_PATH + "store_patient.json"
@@ -15,7 +14,6 @@ class PatientsJsonStore:
 
         def add_item(self, item):
             """Overrides the add_item to verify the item to be stored"""
-            #pylint: disable=import-outside-toplevel, cyclic-import
             from uc3m_care.data.vaccine_patient_register import VaccinePatientRegister
             if not isinstance(item, VaccinePatientRegister):
                 raise VaccineManagementException("Invalid patient object")

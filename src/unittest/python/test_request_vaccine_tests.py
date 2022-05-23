@@ -111,7 +111,6 @@ param_list_nok = [("bb5dbd6f-d8b4-113f-8eb9-dd262cfc54e0",
 
 class TestRequestVacID(unittest.TestCase):
     """Class for testing request_vaccination_id"""
-    #pylint: disable=too-many-locals
     @freeze_time("2022-03-08")
     def test_parametrized_valid_request_vaccination(self):
         """Parametrized tests: valid cases"""

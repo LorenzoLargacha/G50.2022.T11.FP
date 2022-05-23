@@ -3,7 +3,7 @@ import uuid
 from uc3m_care.data.attribute.attribute import Attribute
 from uc3m_care.exception.vaccine_management_exception import VaccineManagementException
 
-#pylint: disable=too-few-public-methods
+
 class PatientId(Attribute):
     """Classs for the attribute PatientId"""
     _validation_pattern = r"^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}" \

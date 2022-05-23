@@ -17,7 +17,6 @@ from uc3m_care.storage.patients_json_store import PatientsJsonStore
 
 class VaccinePatientRegister:
     """Class representing the register of the patient in the system"""
-    #pylint: disable=too-many-arguments
     def __init__(self, patient_id, full_name, registration_type, phone_number, age):
         self.__patient_id = PatientId(patient_id).value
         self.__full_name = FullName(full_name).value

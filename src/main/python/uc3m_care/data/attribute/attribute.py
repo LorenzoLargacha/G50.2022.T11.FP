@@ -2,8 +2,8 @@
 import re
 from uc3m_care.exception.vaccine_management_exception import VaccineManagementException
 
-#pylint: disable=too-few-public-methods
-class Attribute():
+
+class Attribute:
     """class representing attributes"""
     _validation_pattern = r""
     _validation_error_message = ""
